@@ -15,16 +15,15 @@ use ieee.math_real.all;
 entity vga_top is
 	port(
 		PXL_CLK			: in std_logic;
-		RESETN			: in std_logic;
 		VGA_HS			: out std_logic;
 		VGA_VS			: out std_logic;
-		VGA_R			: out std_logic;
-		VGA_G			: out std_logic;
-		VGA_B			: out std_logic;
+		VGA_R			: out std_logic_vector(3 downto 0);
+		VGA_G			: out std_logic_vector(3 downto 0);
+		VGA_B			: out std_logic_vector(3 downto 0);
 		
 		-- Accelerometer specific signals
 		ACC_BOX_SIZE	: in std_logic_vector(11 downto 0);
-		ACC BOX_INNER 	: in std_logic_vector(11 downto 0);
+		ACC_BOX_INNER 	: in std_logic_vector(11 downto 0);
 		ACC_X_IN		: in std_logic_vector(8 downto 0);
 		ACC_Y_IN		: in std_logic_vector(8 downto 0);
 		ACC_MAG_IN		: in std_logic_vector(11 downto 0)
@@ -33,44 +32,13 @@ entity vga_top is
 end vga_top;
 
 architecture behavioral of vga_top is 
-
-
--- instantiate modified version of Digilent VGA display module
-
-	entity work.AccelDisplay
-	GENERIC MAP(
-		 X_XY_WIDTH   : natural := 511; -- Width of the Accelerometer frame X-Y region
-         X_MAG_WIDTH  : natural := 50;  -- Width of the Accelerometer frame Magnitude region
-         Y_HEIGHT     : natural := 511; -- Height of the Accelerometer frame
-         X_START      : natural := 385; -- Accelerometer frame X-Y region starting horizontal location
-         Y_START      : natural := 80; -- Accelerometer frame starting vertical location
-         BG_COLOR : STD_LOGIC_VECTOR (11 downto 0) := x"FFF"; -- Background color - white
-         ACTIVE_COLOR : STD_LOGIC_VECTOR (11 downto 0) := x"0F0"; -- Green when inside the threshold box
-         WARNING_COLOR : STD_LOGIC_VECTOR (11 downto 0) := x"F00" -- Red when outside the threshold box
-			)
-			
-    PORT MAP( 
-         CLK_I : IN std_logic;
-         H_COUNT_I : IN std_logic_vector(11 downto 0);
-         V_COUNT_I : IN std_logic_vector(11 downto 0);
-         ACCEL_X_I : IN std_logic_vector(8 downto 0); -- X acceleration input data
-         ACCEL_Y_I : IN std_logic_vector(8 downto 0); -- Y acceleration input data
-         ACCEL_MAG_I : IN std_logic_vector(8 downto 0); -- Acceleration magnitude input data
-         ACCEL_RADIUS : IN  STD_LOGIC_VECTOR (11 downto 0); -- Size of the box moving according to acceleration data
-         LEVEL_THRESH : IN  STD_LOGIC_VECTOR (11 downto 0); -- Size of the threshold box
-         -- Accelerometer Red, Green and Blue signals
-         RED_O    : OUT std_logic_vector(3 downto 0);
-         BLUE_O   : OUT std_logic_vector(3 downto 0);
-         GREEN_O  : OUT std_logic_vector(3 downto 0)
-         );
 	
-
 -- VGA 1280 x 1024 60Hz constants from online resources
 
 constant T_WIDTH : natural := 1280;
 constant T_HEIGHT: natural := 1024;
 
-constant HOR_FRT_POR : natural := 48
+constant HOR_FRT_POR : natural := 48;
 constant HOR_POR_WID : natural := 112;
 constant HOR_BCK_POR : natural := 248;
 constant HOR_PERIOD  : natural := 1688;
@@ -131,7 +99,7 @@ signal vga_blue : std_logic_vector(3 downto 0);
 
 signal vga_red_act : std_logic_vector(3 downto 0) := (others => '0');
 signal vga_green_act : std_logic_vector(3 downto 0) := (others => '0');
-signal vga_blue_act : std_logic_vector(3 downto 0) : = (others => '0');
+signal vga_blue_act : std_logic_vector(3 downto 0) := (others => '0');
 
 -- Buffered color signals connected to output
 
@@ -205,13 +173,13 @@ begin
 		if(PXL_CLK'event and PXL_CLK = '1') then
 			if(v_sync_reg = VER_POL) then
 				
-				ACCEL_X_I_REG <= ACCEL_X_I;	
-				ACCEL_Y_I_REG <= ACCEl_Y_I;
-				ACCEL_MAG_I_REG <= ACCEL_MAG_I;
-				ACCEL_RADIUS_REG <= ACCEL_RADIUS;
-				LEVEL_THRESH_REG <= LEVEL_THRESH;
+				ACCEL_X_I_REG <= ACC_X_IN;	
+				ACCEL_Y_I_REG <= ACC_Y_IN;
+				ACCEL_MAG_I_REG <= ACC_MAG_IN;
+				ACCEL_RADIUS_REG <= ACC_BOX_SIZE;
+				LEVEL_THRESH_REG <= ACC_BOX_INNER;
 				
-			end if
+			end if;
 		end if;
 	end process;
 	
@@ -260,7 +228,7 @@ begin
 	end process;
 	
 	
-	ACCEL_INST : AccelDisplay
+	ACCEL_INST : entity work.AccelDisplay
 		GENERIC MAP(
 			X_XY_WIDTH => SZ_ACL_XY_WIDTH,
 			X_MAG_WIDTH => SZ_ACL_MAG_WIDTH,
@@ -271,7 +239,7 @@ begin
 			ACTIVE_COLOR => X"0F0",
 			WARNING_COLOR => X"F00"
 			)
-		PORT(
+		PORT MAP(
 			CLK_I => PXL_CLK,
 			ACCEL_X_I => ACCEL_X_I_REG,
 			ACCEL_Y_I => ACCEL_Y_I_REG,
