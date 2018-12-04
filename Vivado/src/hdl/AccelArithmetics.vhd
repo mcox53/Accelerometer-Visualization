@@ -58,6 +58,11 @@ port
  SYSCLK     : in STD_LOGIC; -- System Clock
  RESET      : in STD_LOGIC;
  
+ s_axis_cartesian_tvalid    : IN STD_LOGIC;
+ s_axis_cartesian_tdata     : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+ m_axis_dout_tvalid         : OUT STD_LOGIC;
+ m_axis_dout_tdata          : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+ 
  -- Accelerometer data input signals
  ACCEL_X_IN    : in STD_LOGIC_VECTOR (11 downto 0);
  ACCEL_Y_IN    : in STD_LOGIC_VECTOR (11 downto 0);
@@ -77,15 +82,7 @@ architecture Behavioral of AccelArithmetics is
 -- Then limit to -1g = 0, 0g = 255, 1g = 511
 
 -- Use a Square Root Logicore component to calculate the magnitude
-COMPONENT Square_Root
-  PORT (
-    aclk : IN STD_LOGIC;
-    s_axis_cartesian_tvalid : IN STD_LOGIC;
-    s_axis_cartesian_tdata : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-    m_axis_dout_tvalid : OUT STD_LOGIC;
-    m_axis_dout_tdata : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
-  );
-END COMPONENT;
+
 --ATTRIBUTE SYN_BLACK_BOX : BOOLEAN;
 --ATTRIBUTE SYN_BLACK_BOX OF Square_Root : COMPONENT IS TRUE;
 --ATTRIBUTE BLACK_BOX_PAD_PIN : STRING;
