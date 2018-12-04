@@ -161,6 +161,12 @@ begin
 	display_active <= '1' when (h_cnt < T_WIDTH and v_cnt < T_HEIGHT)
 					  else '0';
 
+	-- Set color data to be the output of the Accel display module, otherwise make it white
+	vga_red <= ACCEL_RED_REG when ((h_cnt > ACL_LEFT) and (h_cnt < ACL_RIGHT) and (v_cnt > ACL_TOP) and (	v_cnt < ACL_BOTTOM)) else X"F";
+	vga_green <= ACCEL_GREEN_REG when ((h_cnt > ACL_LEFT) and (h_cnt < ACL_RIGHT) and (v_cnt > ACL_TOP) and	  (v_cnt < ACL_BOTTOM)) else X"F";
+	vga_blue <= ACCEL_BLUE_REG when ((h_cnt > ACL_LEFT) and (h_cnt < ACL_RIGHT) and (v_cnt > ACL_TOP) and (	  v_cnt < ACL_BOTTOM)) else X"F";
+					  
+
 	vga_red_act <= (display_active & display_active & display_active & display_active) and vga_red;
 	vga_green_act <= (display_active & display_active & display_active & display_active) and vga_green;
 	vga_blue_act <= (display_active & display_active & display_active & display_active) and vga_blue;
@@ -171,99 +177,115 @@ begin
 	VGA_G <= vga_green_reg;
 	VGA_B <= vga_blue_reg;
 
-
 -- Register incoming signals and other internal signals relating to VGA
-signal_register : process(PXL_CLK)
-begin
-	if(PXL_CLK'event and PXL_CLK = '1') then
-		
-		ACCEL_RED_REG <= ACCEL_RED;
-		ACCEL_GREEN_REG <= ACCEL_GREEN;
-		ACCEL_BLUE_REG <= ACCEL_BLUE;
-		
-		h_cnt <= h_cnt_reg;
-		v_cnt <= v_cnt_reg;
-		
-		h_sync <= h_sync_reg;
-		v_sync <= v_sync_reg;
-		
-		vga_red_reg <= vga_red_act;
-		vga_green_reg <= vga_green_act;
-		vga_blue_act <= vga_blue_act;
-		
-	end if;
-end process;
-
--- Register signals that have a slow refresh rate in the blanking area
-slow_signal_register : process(PXL_CLK, v_sync_reg)
-begin
-	if(PXL_CLK'event and PXL_CLK = '1') then
-		if(v_sync_reg = VER_POL) then
+	signal_register : process(PXL_CLK)
+	begin
+		if(PXL_CLK'event and PXL_CLK = '1') then
 			
-			ACCEL_X_I_REG <= ACCEL_X_I;	
-			ACCEL_Y_I_REG <= ACCEl_Y_I;
-			ACCEL_MAG_I_REG <= ACCEL_MAG_I;
-			ACCEL_RADIUS_REG <= ACCEL_RADIUS;
-            LEVEL_THRESH_REG <= LEVEL_THRESH;
+			ACCEL_RED_REG <= ACCEL_RED;
+			ACCEL_GREEN_REG <= ACCEL_GREEN;
+			ACCEL_BLUE_REG <= ACCEL_BLUE;
 			
-		end if
-	end if;
-end process;
-
-horizontal_count : process(PXL_CLK)
-begin
-	if(PXL_CLK'event and PXL_CLK = '1') then
-		if(h_cnt_reg >= (HOR_PERIOD - 1)) then
-			h_cnt_reg <= (others => '0');
-		else
-			h_cnt_reg <= h_cnt_reg + 1;
+			h_cnt <= h_cnt_reg;
+			v_cnt <= v_cnt_reg;
+			
+			h_sync <= h_sync_reg;
+			v_sync <= v_sync_reg;
+			
+			vga_red_reg <= vga_red_act;
+			vga_green_reg <= vga_green_act;
+			vga_blue_act <= vga_blue_act;
+			
 		end if;
-	end if;
-end process;
-
-vertical_count : process(PXL_CLK)
-begin
-	if(PXL_CLK'event and PXL_CLK = '1') then
-		if((h_cnt_reg >= (HOR_PERIOD - 1)) and (v_cnt_reg >= (VER_PERIOD - 1))) then
-			v_cnt_reg <= (others => '0');
-		elsif (h_cnt_reg = (HOR_PERIOD - 1)) then
-			v_cnt_reg <= v_cnt_reg + 1;
-		end if;
-	end if;
-end process;
-
-horizontal_sync : process(PXL_CLK)
-begin
-	if(PXL_CLK'event and PXL_CLK = '1') then
-		if(h_cnt_reg >= (T_WIDTH + HOR_FRT_POR - 1)) and (h_cnt_reg < (T_WIDTH + HOR_FRT_POR + HOR_POR_WID - 1)) then
-			h_sync_reg <= HOR_POL;
-		else
-			h_sync_reg <= not(HOR_POL);
-		end if;
-	end if;
-end proces;
-
-vertical_sync : process(PXL_CLK)
-begin
-	if(PXL_CLK'event and PXL_CLK = '1') then
-		if(v_cnt_reg >= (T_HEIGHT + VER_FRT_POR - 1)) and (v_cnt_reg < (T_HEIGHT + VER_FRT_POR + VER_POR_WID - 1)) then
-			v_sync_reg <= VER_POL;
-		else
-			v_sync_reg <= not(VER_POL);
-		end if;
-	end if;
-end process;
-
-ACCEL_INST : AccelDisplay
-	GENERIC MAP(
+	end process;
 	
-		)
-	PORT(
-		RED_O => ACCEL_RED,
-		GREEN_O => ACCEL_GREEN,
-		BLUE_O => ACCEL_BLUE
-		);
-
-
+	-- Register signals that have a slow refresh rate in the blanking area
+	slow_signal_register : process(PXL_CLK, v_sync_reg)
+	begin
+		if(PXL_CLK'event and PXL_CLK = '1') then
+			if(v_sync_reg = VER_POL) then
+				
+				ACCEL_X_I_REG <= ACCEL_X_I;	
+				ACCEL_Y_I_REG <= ACCEl_Y_I;
+				ACCEL_MAG_I_REG <= ACCEL_MAG_I;
+				ACCEL_RADIUS_REG <= ACCEL_RADIUS;
+				LEVEL_THRESH_REG <= LEVEL_THRESH;
+				
+			end if
+		end if;
+	end process;
+	
+	horizontal_count : process(PXL_CLK)
+	begin
+		if(PXL_CLK'event and PXL_CLK = '1') then
+			if(h_cnt_reg >= (HOR_PERIOD - 1)) then
+				h_cnt_reg <= (others => '0');
+			else
+				h_cnt_reg <= h_cnt_reg + 1;
+			end if;
+		end if;
+	end process;
+	
+	vertical_count : process(PXL_CLK)
+	begin
+		if(PXL_CLK'event and PXL_CLK = '1') then
+			if((h_cnt_reg >= (HOR_PERIOD - 1)) and (v_cnt_reg >= (VER_PERIOD - 1))) then
+				v_cnt_reg <= (others => '0');
+			elsif (h_cnt_reg = (HOR_PERIOD - 1)) then
+				v_cnt_reg <= v_cnt_reg + 1;
+			end if;
+		end if;
+	end process;
+	
+	horizontal_sync : process(PXL_CLK)
+	begin
+		if(PXL_CLK'event and PXL_CLK = '1') then
+			if(h_cnt_reg >= (T_WIDTH + HOR_FRT_POR - 1)) and (h_cnt_reg < (T_WIDTH + HOR_FRT_POR + HOR_POR_WID - 1)) then
+				h_sync_reg <= HOR_POL;
+			else
+				h_sync_reg <= not(HOR_POL);
+			end if;
+		end if;
+	end process;
+	
+	vertical_sync : process(PXL_CLK)
+	begin
+		if(PXL_CLK'event and PXL_CLK = '1') then
+			if(v_cnt_reg >= (T_HEIGHT + VER_FRT_POR - 1)) and (v_cnt_reg < (T_HEIGHT + VER_FRT_POR + VER_POR_WID - 1)) then
+				v_sync_reg <= VER_POL;
+			else
+				v_sync_reg <= not(VER_POL);
+			end if;
+		end if;
+	end process;
+	
+	
+	ACCEL_INST : AccelDisplay
+		GENERIC MAP(
+			X_XY_WIDTH => SZ_ACL_XY_WIDTH,
+			X_MAG_WIDTH => SZ_ACL_MAG_WIDTH,
+			Y_HEIGHT => SZ_ACL_HEIGHT,
+			X_START => FRM_ACL_H_LOC,
+			Y_START => FRM_ACL_V_LOC,
+			BG_COLOR => X"FFF",
+			ACTIVE_COLOR => X"0F0",
+			WARNING_COLOR => X"F00"
+			)
+		PORT(
+			CLK_I => PXL_CLK,
+			ACCEL_X_I => ACCEL_X_I_REG,
+			ACCEL_Y_I => ACCEL_Y_I_REG,
+			ACCEL_MAG_I => ACCEL_MAG_I_REG(8 downto 0),
+			H_COUNT_I => h_cnt_reg,
+			V_COUNT_I => v_cnt_reg,
+			ACCEL_RADIUS => ACCEL_RADIUS_REG,
+			LEVEL_THRESH => LEVEL_THRESH_REG,
+			RED_O => ACCEL_RED,
+			GREEN_O => ACCEL_GREEN,
+			BLUE_O => ACCEL_BLUE
+			);
+	
+		
+end behavioral;
 
 
