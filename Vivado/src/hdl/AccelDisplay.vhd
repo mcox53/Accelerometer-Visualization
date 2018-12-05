@@ -44,7 +44,7 @@ entity AccelDisplay is
              X_START      : natural := 385; -- Accelerometer frame X-Y region starting horizontal location
              Y_START      : natural := 80; -- Accelerometer frame starting vertical location
              BG_COLOR : STD_LOGIC_VECTOR (11 downto 0) := x"FFF"; -- Background color - white
-             ACTIVE_COLOR : STD_LOGIC_VECTOR (11 downto 0) := x"0F0"; -- Green when inside the threshold box
+             --ACTIVE_COLOR : STD_LOGIC_VECTOR (11 downto 0) := x"0F0"; -- Green when inside the threshold box
              WARNING_COLOR : STD_LOGIC_VECTOR (11 downto 0) := x"F00" -- Red when outside the threshold box
            );
     Port
@@ -56,7 +56,8 @@ entity AccelDisplay is
             ACCEL_Y_I : IN std_logic_vector(8 downto 0); -- Y acceleration input data
             ACCEL_MAG_I : IN std_logic_vector(8 downto 0); -- Acceleration magnitude input data
             ACCEL_RADIUS : IN  STD_LOGIC_VECTOR (11 downto 0); -- Size of the box moving according to acceleration data
-            LEVEL_THRESH : IN  STD_LOGIC_VECTOR (11 downto 0); -- Size of the threshold box
+            ACTIVE_COLOR : IN STD_LOGIC_VECTOR(11 downto 0);
+            --LEVEL_THRESH : IN  STD_LOGIC_VECTOR (11 downto 0); -- Size of the threshold box
             -- Accelerometer Red, Green and Blue signals
             RED_O    : OUT std_logic_vector(3 downto 0);
             BLUE_O   : OUT std_logic_vector(3 downto 0);
@@ -89,10 +90,10 @@ signal MOVING_BOX_TOP   : natural;
 signal MOVING_BOX_BOTTOM : natural;
 
 --Threshold box limits
-signal THRESHOLD_BOX_LEFT	 : natural;
-signal THRESHOLD_BOX_RIGHT	 : natural;
-signal THRESHOLD_BOX_TOP	 : natural;
-signal THRESHOLD_BOX_BOTTOM : natural;
+--signal THRESHOLD_BOX_LEFT	 : natural;
+--signal THRESHOLD_BOX_RIGHT	 : natural;
+--signal THRESHOLD_BOX_TOP	 : natural;
+--signal THRESHOLD_BOX_BOTTOM : natural;
 
 -- Signals showing when to send moving box or magnitude level 
 -- or threshold box data
@@ -118,10 +119,10 @@ MOVING_BOX_TOP	   <= Y_START - conv_integer(ACCEL_RADIUS) - 1;
 MOVING_BOX_BOTTOM <= Y_START + conv_integer(ACCEL_RADIUS) + 1;
 
 --Threshold box limits
-THRESHOLD_BOX_LEFT	<= FR_XY_H_MID + X_START - conv_integer(LEVEL_THRESH) - 1;
-THRESHOLD_BOX_RIGHT	<= FR_XY_H_MID + X_START + conv_integer(LEVEL_THRESH) + 1;
-THRESHOLD_BOX_TOP		<= FR_XY_V_MID + Y_START - conv_integer(LEVEL_THRESH) - 1;
-THRESHOLD_BOX_BOTTOM <= FR_XY_V_MID + Y_START + conv_integer(LEVEL_THRESH) + 1;
+--THRESHOLD_BOX_LEFT	<= FR_XY_H_MID + X_START - conv_integer(LEVEL_THRESH) - 1;
+--THRESHOLD_BOX_RIGHT	<= FR_XY_H_MID + X_START + conv_integer(LEVEL_THRESH) + 1;
+--THRESHOLD_BOX_TOP		<= FR_XY_V_MID + Y_START - conv_integer(LEVEL_THRESH) - 1;
+--THRESHOLD_BOX_BOTTOM <= FR_XY_V_MID + Y_START + conv_integer(LEVEL_THRESH) + 1;
 
 -- Create the moving box signal
 -- Note that the accelerometer on the Nexys4 board is turned 90 degrees, 
@@ -142,23 +143,26 @@ draw_magnitude_level <= '1' when   H_COUNT_I >= (X_MAG_START - 1)
                         else '0';
  
 --Create the threshold box signal 
-draw_threshold_box <= '1' when ((H_COUNT_I = THRESHOLD_BOX_LEFT or H_COUNT_I = THRESHOLD_BOX_RIGHT)  -- Left and Right vertical lines
-                            and  V_COUNT_I >= THRESHOLD_BOX_TOP 
-                            and  V_COUNT_I <= THRESHOLD_BOX_BOTTOM )
-                             or 
-                               ((V_COUNT_I = THRESHOLD_BOX_TOP or  V_COUNT_I = THRESHOLD_BOX_BOTTOM) -- Top and Bottom Horizontal Lines
-                            and  H_COUNT_I >= THRESHOLD_BOX_LEFT 
-                            and  H_COUNT_I <= THRESHOLD_BOX_RIGHT) 
+--draw_threshold_box <= '1' when ((H_COUNT_I = THRESHOLD_BOX_LEFT or H_COUNT_I = THRESHOLD_BOX_RIGHT)  -- Left and Right vertical lines
+--                            and  V_COUNT_I >= THRESHOLD_BOX_TOP 
+--                            and  V_COUNT_I <= THRESHOLD_BOX_BOTTOM )
+--                             or 
+--                               ((V_COUNT_I = THRESHOLD_BOX_TOP or  V_COUNT_I = THRESHOLD_BOX_BOTTOM) -- Top and Bottom Horizontal Lines
+--                            and  H_COUNT_I >= THRESHOLD_BOX_LEFT 
+--                            and  H_COUNT_I <= THRESHOLD_BOX_RIGHT) 
                           
-                          else '0';
+--                          else '0';
                
 -- The moving box is green when inside the threshold box and red when outside                          
-level_color <= ACTIVE_COLOR when  ACCEL_Y_I >= (FR_XY_V_MID - LEVEL_THRESH) -- Upper boundary
-                              and ACCEL_Y_I <= (FR_XY_V_MID + LEVEL_THRESH) -- Lower boundary
-                              and ACCEL_X_I >= (FR_XY_H_MID - LEVEL_THRESH) -- Left boundary
-                              and ACCEL_X_I <= (FR_XY_H_MID + LEVEL_THRESH) -- Right boundary
+--level_color <= ACTIVE_COLOR when  ACCEL_Y_I >= (FR_XY_V_MID - LEVEL_THRESH) -- Upper boundary
+--                              and ACCEL_Y_I <= (FR_XY_V_MID + LEVEL_THRESH) -- Lower boundary
+--                              and ACCEL_X_I >= (FR_XY_H_MID - LEVEL_THRESH) -- Left boundary
+--                              and ACCEL_X_I <= (FR_XY_H_MID + LEVEL_THRESH) -- Right boundary
                             
-                            else WARNING_COLOR;
+--                            else WARNING_COLOR;
+
+-- Only use one color so that the user can change it with the keyboard.
+level_color <= ACTIVE_COLOR;
 
 magnitude_color <= ACTIVE_COLOR;              
                      

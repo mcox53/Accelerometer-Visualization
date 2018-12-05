@@ -23,7 +23,8 @@ entity vga_top is
 		
 		-- Accelerometer specific signals
 		ACC_BOX_SIZE	: in std_logic_vector(11 downto 0);
-		ACC_BOX_INNER 	: in std_logic_vector(11 downto 0);
+		ACC_BOX_COLOR   : in std_logic_vector(11 downto 0);
+		--ACC_BOX_INNER 	: in std_logic_vector(11 downto 0);
 		ACC_X_IN		: in std_logic_vector(8 downto 0);
 		ACC_Y_IN		: in std_logic_vector(8 downto 0);
 		ACC_MAG_IN		: in std_logic_vector(11 downto 0)
@@ -113,7 +114,8 @@ signal ACCEL_X_I_REG	: std_logic_vector(8 downto 0);
 signal ACCEL_Y_I_REG	: std_logic_vector(8 downto 0);
 signal ACCEL_MAG_I_REG	: std_logic_vector(11 downto 0);
 signal ACCEL_RADIUS_REG	: std_logic_vector(11 downto 0);
-signal LEVEL_THRESH_REG	: std_logic_vector(11 downto 0);
+--signal LEVEL_THRESH_REG	: std_logic_vector(11 downto 0);
+signal ACTIVE_COLOR_REG : std_logic_vector(11 downto 0);
 
 signal ACCEL_RED		: std_logic_vector(3 downto 0);
 signal ACCEL_GREEN		: std_logic_vector(3 downto 0);
@@ -177,7 +179,8 @@ begin
 				ACCEL_Y_I_REG <= ACC_Y_IN;
 				ACCEL_MAG_I_REG <= ACC_MAG_IN;
 				ACCEL_RADIUS_REG <= ACC_BOX_SIZE;
-				LEVEL_THRESH_REG <= ACC_BOX_INNER;
+				--LEVEL_THRESH_REG <= ACC_BOX_INNER;
+				ACTIVE_COLOR_REG <= ACC_BOX_COLOR;
 				
 			end if;
 		end if;
@@ -236,7 +239,7 @@ begin
 			X_START => FRM_ACL_H_LOC,
 			Y_START => FRM_ACL_V_LOC,
 			BG_COLOR => X"FFF",
-			ACTIVE_COLOR => X"0F0",
+			--ACTIVE_COLOR => X"0F0",
 			WARNING_COLOR => X"F00"
 			)
 		PORT MAP(
@@ -247,7 +250,8 @@ begin
 			H_COUNT_I => h_cnt_reg,
 			V_COUNT_I => v_cnt_reg,
 			ACCEL_RADIUS => ACCEL_RADIUS_REG,
-			LEVEL_THRESH => LEVEL_THRESH_REG,
+			--LEVEL_THRESH => LEVEL_THRESH_REG,
+			ACTIVE_COLOR => ACTIVE_COLOR_REG,
 			RED_O => ACCEL_RED,
 			GREEN_O => ACCEL_GREEN,
 			BLUE_O => ACCEL_BLUE
