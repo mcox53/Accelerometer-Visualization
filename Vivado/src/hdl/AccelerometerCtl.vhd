@@ -59,10 +59,10 @@ port
  SS         : out STD_LOGIC;
  
  -- Square root signals
- S_AXIS_CARTESIAN_TVALID    : IN STD_LOGIC;
- S_AXIS_CARTESIAN_TDATA     : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
- M_AXIS_DOUT_TVALID         : OUT STD_LOGIC;
- M_AXIS_DOUT_TDATA          : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+ S_AXIS_CARTESIAN_TVALID    : OUT STD_LOGIC;
+ S_AXIS_CARTESIAN_TDATA     : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+ --M_AXIS_DOUT_TVALID         : IN STD_LOGIC;
+ M_AXIS_DOUT_TDATA          : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
 
 -- Accelerometer data signals
  ACCEL_X_OUT    : out STD_LOGIC_VECTOR (8 downto 0);
@@ -123,10 +123,10 @@ port
  Data_Ready    : in STD_LOGIC;
  
  --Square root signals
- s_axis_cartesian_tvalid    : IN STD_LOGIC;
- s_axis_cartesian_tdata     : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
- m_axis_dout_tvalid         : OUT STD_LOGIC;
- m_axis_dout_tdata          : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+ s_axis_cartesian_tvalid    : OUT STD_LOGIC;
+ s_axis_cartesian_tdata     : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+ --m_axis_dout_tvalid         : OUT STD_LOGIC;
+ m_axis_dout_tdata          : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
 
  -- Accelerometer data output signals to be sent to the VGA controller
  
@@ -219,7 +219,7 @@ PORT MAP
  
  s_axis_cartesian_tvalid => S_AXIS_CARTESIAN_TVALID,
  s_axis_cartesian_tdata => S_AXIS_CARTESIAN_TDATA,
- m_axis_dout_tvalid => M_AXIS_DOUT_TVALID,
+-- m_axis_dout_tvalid => M_AXIS_DOUT_TVALID,
  m_axis_dout_tdata => M_AXIS_DOUT_TDATA,
 
  -- Accelerometer data output signals to be sent to the VGA display
