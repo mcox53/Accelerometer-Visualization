@@ -59,15 +59,15 @@ port
  SS         : out STD_LOGIC;
  
  -- Square root signals
- S_AXIS_CARTESIAN_TVALID    : OUT STD_LOGIC;
- S_AXIS_CARTESIAN_TDATA     : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+ --S_AXIS_CARTESIAN_TVALID    : OUT STD_LOGIC;
+ --S_AXIS_CARTESIAN_TDATA     : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
  --M_AXIS_DOUT_TVALID         : IN STD_LOGIC;
- M_AXIS_DOUT_TDATA          : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+ --M_AXIS_DOUT_TDATA          : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
 
 -- Accelerometer data signals
  ACCEL_X_OUT    : out STD_LOGIC_VECTOR (8 downto 0);
  ACCEL_Y_OUT    : out STD_LOGIC_VECTOR (8 downto 0);
- ACCEL_MAG_OUT  : out STD_LOGIC_VECTOR (11 downto 0);
+ --ACCEL_MAG_OUT  : out STD_LOGIC_VECTOR (11 downto 0);
  ACCEL_TMP_OUT  : out STD_LOGIC_VECTOR (11 downto 0)
 
 );
@@ -123,16 +123,16 @@ port
  Data_Ready    : in STD_LOGIC;
  
  --Square root signals
- s_axis_cartesian_tvalid    : OUT STD_LOGIC;
- s_axis_cartesian_tdata     : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+ --s_axis_cartesian_tvalid    : OUT STD_LOGIC;
+ --s_axis_cartesian_tdata     : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
  --m_axis_dout_tvalid         : OUT STD_LOGIC;
- m_axis_dout_tdata          : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+ --m_axis_dout_tdata          : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
 
  -- Accelerometer data output signals to be sent to the VGA controller
  
  ACCEL_X_OUT    : out STD_LOGIC_VECTOR (8 downto 0);
- ACCEL_Y_OUT    : out STD_LOGIC_VECTOR (8 downto 0);
- ACCEL_MAG_OUT  : out STD_LOGIC_VECTOR (11 downto 0)
+ ACCEL_Y_OUT    : out STD_LOGIC_VECTOR (8 downto 0)
+ --ACCEL_MAG_OUT  : out STD_LOGIC_VECTOR (11 downto 0)
 );
 end component;
 
@@ -217,15 +217,15 @@ PORT MAP
  ACCEL_Z_IN => ACCEL_Z,
  Data_Ready => Data_Ready,
  
- s_axis_cartesian_tvalid => S_AXIS_CARTESIAN_TVALID,
- s_axis_cartesian_tdata => S_AXIS_CARTESIAN_TDATA,
+ --s_axis_cartesian_tvalid => S_AXIS_CARTESIAN_TVALID,
+ --s_axis_cartesian_tdata => S_AXIS_CARTESIAN_TDATA,
 -- m_axis_dout_tvalid => M_AXIS_DOUT_TVALID,
- m_axis_dout_tdata => M_AXIS_DOUT_TDATA,
+--m_axis_dout_tdata => open,
 
  -- Accelerometer data output signals to be sent to the VGA display
  ACCEL_X_OUT => ACCEL_X_OUT,
- ACCEL_Y_OUT => ACCEL_Y_OUT,
- ACCEL_MAG_OUT => ACCEL_MAG_OUT
+ ACCEL_Y_OUT => ACCEL_Y_OUT
+ --ACCEL_MAG_OUT => ACCEL_MAG_OUT
 );
 
 end Behavioral;

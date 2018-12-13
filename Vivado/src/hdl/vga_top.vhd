@@ -26,8 +26,8 @@ entity vga_top is
 		ACC_BOX_COLOR   : in std_logic_vector(11 downto 0);
 		--ACC_BOX_INNER 	: in std_logic_vector(11 downto 0);
 		ACC_X_IN		: in std_logic_vector(8 downto 0);
-		ACC_Y_IN		: in std_logic_vector(8 downto 0);
-		ACC_MAG_IN		: in std_logic_vector(11 downto 0)
+		ACC_Y_IN		: in std_logic_vector(8 downto 0)
+		--ACC_MAG_IN		: in std_logic_vector(11 downto 0)
 		);
 		
 end vga_top;
@@ -177,7 +177,7 @@ begin
 				
 				ACCEL_X_I_REG <= ACC_X_IN;	
 				ACCEL_Y_I_REG <= ACC_Y_IN;
-				ACCEL_MAG_I_REG <= ACC_MAG_IN;
+				--ACCEL_MAG_I_REG <= ACC_MAG_IN;
 				ACCEL_RADIUS_REG <= ACC_BOX_SIZE;
 				--LEVEL_THRESH_REG <= ACC_BOX_INNER;
 				ACTIVE_COLOR_REG <= ACC_BOX_COLOR;
@@ -246,7 +246,7 @@ begin
 			CLK_I => PXL_CLK,
 			ACCEL_X_I => ACCEL_X_I_REG,
 			ACCEL_Y_I => ACCEL_Y_I_REG,
-			ACCEL_MAG_I => ACCEL_MAG_I_REG(8 downto 0),
+			--ACCEL_MAG_I => ACCEL_MAG_I_REG(8 downto 0),
 			H_COUNT_I => h_cnt_reg,
 			V_COUNT_I => v_cnt_reg,
 			ACCEL_RADIUS => ACCEL_RADIUS_REG,

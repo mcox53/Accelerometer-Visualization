@@ -58,10 +58,10 @@ port
  SYSCLK     : in STD_LOGIC; -- System Clock
  RESET      : in STD_LOGIC;
  
- s_axis_cartesian_tvalid    : OUT STD_LOGIC;
- s_axis_cartesian_tdata     : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+ --s_axis_cartesian_tvalid    : OUT STD_LOGIC;
+ --s_axis_cartesian_tdata     : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
  --m_axis_dout_tvalid         : IN STD_LOGIC;
- m_axis_dout_tdata          : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+ --m_axis_dout_tdata          : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
  
  -- Accelerometer data input signals
  ACCEL_X_IN    : in STD_LOGIC_VECTOR (11 downto 0);
@@ -71,8 +71,8 @@ port
 
  -- Accelerometer data output signals to be sent to the VGA display
  ACCEL_X_OUT    : out STD_LOGIC_VECTOR (8 downto 0);
- ACCEL_Y_OUT    : out STD_LOGIC_VECTOR (8 downto 0);
- ACCEL_MAG_OUT  : out STD_LOGIC_VECTOR (11 downto 0)
+ ACCEL_Y_OUT    : out STD_LOGIC_VECTOR (8 downto 0)
+ --ACCEL_MAG_OUT  : out STD_LOGIC_VECTOR (11 downto 0)
 );
 end AccelArithmetics;
 
@@ -225,9 +225,9 @@ end process Calculate_Square_Sum;
 
 -- Reroute square root signals to external CORDIC interface
 -- m_axis_dout_tvalid is left open in example so no need to connect
-    s_axis_cartesian_tvalid <= Data_Ready_1;
-    s_axis_cartesian_tdata <= (ACCEL_MAG_SQUARE);
-    ACCEL_MAG_SQRT <= m_axis_dout_tdata (13 downto 0);
+   -- s_axis_cartesian_tvalid <= Data_Ready_1;
+    --s_axis_cartesian_tdata <= (ACCEL_MAG_SQUARE);
+    --ACCEL_MAG_SQRT <= m_axis_dout_tdata (13 downto 0);
 
 -- Calculate the square root to determine magnitude
 --Magnitude_Calculation : Square_Root
@@ -242,6 +242,6 @@ end process Calculate_Square_Sum;
 
 
 -- Also divide the square root by 4
-ACCEL_MAG_OUT <= ACCEL_MAG_SQRT(13 downto 2);
+--ACCEL_MAG_OUT <= ACCEL_MAG_SQRT(13 downto 2);
 
 end Behavioral;
